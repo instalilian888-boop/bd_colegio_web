@@ -1,11 +1,11 @@
 <?php
 // index.php
 
-// Datos de conexión
-$host = 'mysql-alwaysdata.alwaysdata.net'; // Cambia esto por tu host de AlwaysData
-$db   = 'alexagon08_bd_colegioo';          // Nombre de la base de datos en AlwaysData
-$user = 'alexagon08_bd_colegioo';          // Usuario de AlwaysData
-$pass = 'contrasena2109_2008';                     // Tu contraseña de AlwaysData
+// Datos de conexión a AlwaysData
+$host = 'mysql-alexagon08.alwaysdata.net';
+$db   = 'alexagon08_bd_colegioo';
+$user = 'alexagon08_bd_colegioo';
+$pass = 'contrasena2109_2008'; // Cambia esto por tu contraseña real
 
 // Conexión a la base de datos usando PDO
 try {
@@ -16,7 +16,7 @@ try {
 }
 
 // Consulta para obtener los primeros 100 registros
-$stmt = $pdo->query("SELECT * FROM personas LIMIT 100");
+$stmt = $pdo->query("SELECT * FROM personas LIMIT 100"); // Cambia 'personas' si tu tabla tiene otro nombre
 $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
