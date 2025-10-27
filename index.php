@@ -1,49 +1,36 @@
 <?php
 // index.php - Mostrar la tabla `personas` desde la BD en AlwaysData usando PDO
 
-// --- CONFIGURA ESTOS VALORES ---
-$db_host = 'mysql-alexagon08.alwaysdata.net'; // host (según tus mensajes anteriores)
-$db_name = 'alexagon08_bd_colegioo';          // nombre de la base (me indicaste este)
-$db_user = '435440_bdcolegio';               // usuario (ejemplo usado antes; ajústalo si es distinto)
-$db_pass = 'contrasena2109_2008';            // contraseña que indicaste
-// -------------------------------
+// --- CONFIGURACIÓN DE CONEXIÓN ---
+$db_host = 'mysql-alexagon08.alwaysdata.net';  // Host correcto de AlwaysData
+$db_name = 'alexagon08_bd_colegioo';           // Nombre exacto de la base
+$db_user = '435440_bdcolegio';                 // Usuario de tu BD
+$db_pass = 'contrasena2109_2008';              // Contraseña correcta
+// ---------------------------------
 
 try {
-    // DSN con charset
     $dsn = "mysql:host={$db_host};dbname={$db_name};charset=utf8mb4";
-    // Opciones recomendadas
-    $opts = [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,        // excepciones en errores
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,   // arrays asociativos
-        PDO::ATTR_EMULATE_PREPARES => false,                // usar prepares reales
-    ];
-
-    $pdo = new PDO($dsn, $db_user, $db_pass, $opts);
+    $pdo = new PDO($dsn, $db_user, $db_pass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ]);
 } catch (PDOException $e) {
-    // Error de conexión: mostrar mensaje amigable (no exponer detalles en producción)
-    echo "<h2>Error de conexión a la base de datos</h2>";
+    echo "<h2 style='color:red;'>❌ Error de conexión a la base de datos</h2>";
     echo "<p>Comprueba host, usuario, contraseña y que la base exista.</p>";
-    // Para depuración temporal puedes descomentar la siguiente línea:
-    // echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
     exit;
 }
 
-// Consulta: obtener todos los registros de la tabla `personas`
 try {
     $stmt = $pdo->query("SELECT * FROM personas");
     $personas = $stmt->fetchAll();
 } catch (PDOException $e) {
-    echo "<h2>Error al consultar la tabla `personas`</h2>";
-    echo "<p>Revisa que la tabla exista y que el usuario tenga permisos.</p>";
-    // Para depuración temporal:
-    // echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+    echo "<h2 style='color:red;'>❌ Error al consultar la tabla 'personas'</h2>";
+    echo "<p>Verifica que la tabla exista en la base de datos.</p>";
     exit;
 }
 
-// Helper para escapar salida (seguridad XSS)
-function h($s) {
-    return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
+function h($s) { return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 ?>
 <!doctype html>
 <html lang="es">
@@ -70,13 +57,9 @@ function h($s) {
       <caption>Registros encontrados: <?= count($personas) ?></caption>
       <thead>
         <tr>
-          <?php
-            // Mostrar cabeceras dinámicas según columnas devueltas
-            $first = $personas[0];
-            foreach (array_keys($first) as $col) {
-                echo "<th>" . h($col) . "</th>";
-            }
-          ?>
+          <?php foreach (array_keys($personas[0]) as $col): ?>
+            <th><?= h($col) ?></th>
+          <?php endforeach; ?>
         </tr>
       </thead>
       <tbody>
@@ -92,8 +75,7 @@ function h($s) {
   <?php endif; ?>
 
   <p style="margin-top:20px; font-size:0.9rem; color:#555;">
-    Nota: si tienes errores revisa host, usuario, contraseña y que la tabla exista. 
-    Evita subir credenciales en repositorios públicos; usa un archivo de configuración o variables de entorno en producción.
+    Nota: si ves un error, revisa host, usuario, contraseña y nombre de la tabla.
   </p>
 </body>
 </html>
